@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
+import "../src/assets/css/Home.css"
+
 
 const Home = () => {
   const [foodName, setFoodName] = useState("");
   const [foodType, setFoodType] = useState("");
   const [maxDeliveryTime, setMaxDeliveryTime] = useState(0);
-  const [filterType, setFilterType] = useState("");
-  const [filterTime, setFilterTime] = useState("");
   const [foods, setFoods] = useState([]);
 
   useEffect(() => {
@@ -20,37 +19,52 @@ const Home = () => {
     localStorage.setItem("foods", JSON.stringify(foods));
   }, [foods]);
 
-  const handleFilterTypeChange = (e) => {
-    setFilterType(e.target.value);
+  const handleFoodNameChange = (e) => {
+    setFoodName(e.target.value);
   };
 
-  const handleFilterTimeChange = (e) => {
-    setFilterTime(e.target.value);
+  const handleFoodTypeChange = (e) => {
+    setFoodType(e.target.value);
   };
 
-  const handleSort = (e) => {
-    const sortedFoods = [...foods].sort(
-      (a, b) => a.maxDeliveryTime - b.maxDeliveryTime
-    );
-    setFoods(sortedFoods);
+  const handleMaxDeliveryTimeChange = (e) => {
+    setMaxDeliveryTime(parseInt(e.target.value));
   };
 
-  const filteredFoods = foods.filter(
-    (food) =>
-      (!filterType || food.foodType === filterType) &&
-      (!filterTime || food.maxDeliveryTime <= filterTime)
-  );
+  const handleAddFood = (e) => {
+    e.preventDefault();
+    const newFood = {
+      foodName,
+      foodType,
+      maxDeliveryTime
+    };
+    setFoods([...foods, newFood]);
+    setFoodName("");
+    setFoodType("");
+    setMaxDeliveryTime(0);
+  };
+
 
   return (
-    <>
-      <div className="filters">
-        <h2>Filter By:</h2>
-        <label htmlFor="filterType">
+  <>
+    <div className="addFoodForm">
+      <h2>Add Food:</h2>
+      <form onSubmit={handleAddFood}>
+        <label htmlFor="foodName">
+          Food Name:
+          <input
+            type="text"
+            id="foodName"
+            value={foodName}
+            onChange={handleFoodNameChange}
+          />
+        </label>
+        <label htmlFor="foodType">
           Food Type:
           <select
-            id="filterType"
-            value={filterType}
-            onChange={handleFilterTypeChange}
+            id="foodType"
+            value={foodType}
+            onChange={handleFoodTypeChange}
           >
             <option value="">Select Food Type</option>
             <option value="Delicious Food">Delicious Food</option>
@@ -60,29 +74,20 @@ const Home = () => {
             <option value="Desserts">Desserts</option>
           </select>
         </label>
-        <label htmlFor="filterTime">
+        <label htmlFor="maxDeliveryTime">
           Max Delivery Time (in mins):
           <input
             type="number"
-            id="filterTime"
-            value={filterTime}
-            onChange={handleFilterTimeChange}
+            id="maxDeliveryTime"
+            value={maxDeliveryTime}
+            onChange={handleMaxDeliveryTimeChange}
           />
         </label>
-        <button onClick={handleSort}>Sort by Max Delivery Time</button>
-      </div>
-      <div className="foodList">
-        <h2>Food List:</h2>
-        <ul>
-          {filteredFoods.map((food, index) => (
-            <li key={index}>
-              {food.foodName} - {food.foodType} - {food.maxDeliveryTime} mins
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
-  );
+        <button type="submit">Add Food</button>
+      </form>
+    </div>
+  </>
+);
 };
 
 export default Home;
